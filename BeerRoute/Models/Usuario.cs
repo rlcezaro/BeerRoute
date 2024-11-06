@@ -23,7 +23,7 @@ namespace BeerRoute.Models
         [Range(0, int.MaxValue)]
         public int Creditos { get; set; }
 
-        public ICollection<Visita> Visitas { get; set; }
-        public ICollection<CompraCredito> ComprasCreditos { get; set; }
+        public ICollection<Visita> Visitas { get; set; } = new List<Visita>();
+        public ICollection<CompraCredito> ComprasCreditos { get; set; } = new List<CompraCredito>();
     }
 }

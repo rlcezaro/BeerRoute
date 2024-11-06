@@ -1,4 +1,9 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using BeerRoute.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<BeerRouteContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BeerRouteContext") ?? throw new InvalidOperationException("Connection string 'BeerRouteContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
