@@ -25,6 +25,7 @@ namespace BeerRoute.Models
         public string Site { get; set; }
         public string Facebook { get; set; }
         public string Instagram { get; set; }
+        [Url]
         public string ImagemUrl { get; set; }
         public ICollection<CervejariaTipoCerveja> CervejariaTiposCervejas { get; set; }
         public ICollection<Visita> Visitas { get; set; }
