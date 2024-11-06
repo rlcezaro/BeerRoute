@@ -15,5 +15,17 @@ namespace BeerRoute.Data
         }
 
         public DbSet<BeerRoute.Models.Cervejaria> Cervejaria { get; set; } = default!;
+
+        public DbSet<BeerRoute.Models.TipoCerveja>? TipoCerveja { get; set; }
+
+        public DbSet<BeerRoute.Models.CervejariaTipoCerveja>? CervejariaTipoCerveja { get; set; }
+
+        public DbSet<BeerRoute.Models.Usuario>? Usuario { get; set; }
+
+        public DbSet<BeerRoute.Models.Visita>? Visita { get; set; }
+
+        public DbSet<BeerRoute.Models.Evento>? Evento { get; set; }
+
+        public DbSet<BeerRoute.Models.CompraCredito>? CompraCredito { get; set; }
     }
 }
