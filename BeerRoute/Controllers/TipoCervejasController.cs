@@ -58,13 +58,13 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Estilo,Pais,Fabricante,IBU,ABV,Descricao,ImagemUrl")] TipoCerveja tipoCerveja)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Add(tipoCerveja);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            return View(tipoCerveja);
+            //}
+            //return View(tipoCerveja);
         }
 
         // GET: TipoCervejas/Edit/5

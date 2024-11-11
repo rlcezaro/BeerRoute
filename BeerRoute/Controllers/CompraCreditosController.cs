@@ -59,14 +59,14 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UsuarioId,Quantidade,DataCompra")] CompraCredito compraCredito)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Add(compraCredito);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", compraCredito.UsuarioId);
-            return View(compraCredito);
+            //}
+            //ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", compraCredito.UsuarioId);
+            //return View(compraCredito);
         }
 
         // GET: CompraCreditos/Edit/5
