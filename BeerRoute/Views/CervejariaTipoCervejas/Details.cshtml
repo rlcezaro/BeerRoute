@@ -1,18 +1,23 @@
-﻿@model BeerRoute.Models.CervejariaTipoCerveja
+﻿@model BeerRoute.Models.Cervejaria
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1 class="text-center">@Model.Nome</h1>
 
 <div>
-    <h4>CervejariaTipoCerveja</h4>
+    <h4>Tipos de Cerveja Ofertados</h4>
     <hr />
-    <dl class="row">
-    </dl>
+    <ul>
+        @foreach (var tipoCerveja in Model.CervejariaTiposCervejas.Select(ctc => ctc.TipoCerveja))
+        {
+            <li>@tipoCerveja.Nome</li>
+        }
+    </ul>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+

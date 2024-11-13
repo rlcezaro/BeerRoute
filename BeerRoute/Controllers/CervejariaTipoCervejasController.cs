@@ -39,16 +39,21 @@ namespace BeerRoute.Controllers
             }
 
             var cervejariaTipoCerveja = await _context.CervejariaTipoCerveja
-                .Include(ctc => ctc.Cervejaria) // Adicionado
-                .Include(ctc => ctc.TipoCerveja) // Adicionado
+                .Include(ctc => ctc.Cervejaria)
+                .ThenInclude(c => c.CervejariaTiposCervejas)
+                .ThenInclude(ctc => ctc.TipoCerveja)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (cervejariaTipoCerveja == null)
             {
                 return NotFound();
             }
 
-            return View(cervejariaTipoCerveja);
+            var cervejaria = cervejariaTipoCerveja.Cervejaria;
+
+            return View(cervejaria);
         }
+
 
         // GET: CervejariaTipoCervejas/Create
         public IActionResult Create()
