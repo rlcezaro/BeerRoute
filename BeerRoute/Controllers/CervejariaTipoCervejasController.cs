@@ -23,9 +23,11 @@ namespace BeerRoute.Controllers
         // GET: CervejariaTipoCervejas
         public async Task<IActionResult> Index()
         {
-              return _context.CervejariaTipoCerveja != null ? 
-                          View(await _context.CervejariaTipoCerveja.ToListAsync()) :
-                          Problem("Entity set 'BeerRouteContext.CervejariaTipoCerveja'  is null.");
+            var cervejariaTipoCervejas = await _context.CervejariaTipoCerveja // Modificado
+                .Include(ctc => ctc.Cervejaria) // Adicionado
+                .Include(ctc => ctc.TipoCerveja) // Adicionado
+                .ToListAsync(); // Modificado
+            return View(cervejariaTipoCervejas); // Modificado
         }
 
         // GET: CervejariaTipoCervejas/Details/5
@@ -37,6 +39,8 @@ namespace BeerRoute.Controllers
             }
 
             var cervejariaTipoCerveja = await _context.CervejariaTipoCerveja
+                .Include(ctc => ctc.Cervejaria) // Adicionado
+                .Include(ctc => ctc.TipoCerveja) // Adicionado
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cervejariaTipoCerveja == null)
             {
@@ -64,9 +68,9 @@ namespace BeerRoute.Controllers
         {
             //if (ModelState.IsValid)
             //{
-                _context.Add(cervejariaTipoCerveja);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+            _context.Add(cervejariaTipoCerveja);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
             //}
             //return View(cervejariaTipoCerveja);
         }
@@ -131,6 +135,8 @@ namespace BeerRoute.Controllers
             }
 
             var cervejariaTipoCerveja = await _context.CervejariaTipoCerveja
+                .Include(ctc => ctc.Cervejaria) // Adicionado
+                .Include(ctc => ctc.TipoCerveja) // Adicionado
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cervejariaTipoCerveja == null)
             {
@@ -154,14 +160,14 @@ namespace BeerRoute.Controllers
             {
                 _context.CervejariaTipoCerveja.Remove(cervejariaTipoCerveja);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CervejariaTipoCervejaExists(int id)
         {
-          return (_context.CervejariaTipoCerveja?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.CervejariaTipoCerveja?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

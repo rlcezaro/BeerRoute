@@ -11,5 +11,8 @@ namespace BeerRoute.Models
         [Required]
         [Display(Name = "Tipo de Cerveja")]
         public int TipoCervejaId { get; set; }
+
+        public Cervejaria Cervejaria { get; set; }
+        public TipoCerveja TipoCerveja { get; set; }
     }
 }
