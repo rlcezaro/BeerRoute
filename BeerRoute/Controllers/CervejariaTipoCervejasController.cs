@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeerRoute.Data;
 using BeerRoute.Models;
+using BeerRoute.Models.ViewModels;
 
 namespace BeerRoute.Controllers
 {
@@ -48,7 +49,10 @@ namespace BeerRoute.Controllers
         // GET: CervejariaTipoCervejas/Create
         public IActionResult Create()
         {
-            return View();
+            var vm_cervejarias = new ViewModelCervejariaCervejas();
+            vm_cervejarias.Cervejarias = _context.Cervejaria.ToList();
+            vm_cervejarias.TipoCervejas = _context.TipoCerveja.ToList();
+            return View(vm_cervejarias);
         }
 
         // POST: CervejariaTipoCervejas/Create
@@ -58,13 +62,13 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CervejariaId,TipoCervejaId")] CervejariaTipoCerveja cervejariaTipoCerveja)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Add(cervejariaTipoCerveja);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            return View(cervejariaTipoCerveja);
+            //}
+            //return View(cervejariaTipoCerveja);
         }
 
         // GET: CervejariaTipoCervejas/Edit/5
