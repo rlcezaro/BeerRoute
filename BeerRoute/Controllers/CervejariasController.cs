@@ -22,10 +22,18 @@ namespace BeerRoute.Controllers
         // GET: Cervejarias
         public async Task<IActionResult> Index()
         {
-              return _context.Cervejaria != null ? 
-                          View(await _context.Cervejaria.ToListAsync()) :
-                          Problem("Entity set 'BeerRouteContext.Cervejaria'  is null.");
+            if (_context.Cervejaria == null)
+            {
+                return Problem("Entity set 'BeerRouteContext.Cervejaria' is null.");
+            }
+
+            var cervejarias = await _context.Cervejaria
+                .Where(c => c.Latitude >= -90 && c.Latitude <= 90 && c.Longitude >= -180 && c.Longitude <= 180)
+                .ToListAsync();
+
+            return View(cervejarias);
         }
+
 
         // GET: Cervejarias/Details/5
         public async Task<IActionResult> Details(int? id)
