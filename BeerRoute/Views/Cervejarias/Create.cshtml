@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Create";
+
+    var apiKey = ViewBag.ApiKey;
 }
 
 <h1>Create</h1>
@@ -87,7 +89,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFaoOy_dtwHglwcp9TrJgAP62TAsV5Fys&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
     <script>
         var map;
         var marker;

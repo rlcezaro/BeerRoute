@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Cadastro de Cervejarias";
+    var apiKey = ViewBag.ApiKey;
 }
 
 <h1>Cadastro de Cervejarias</h1>
@@ -14,7 +15,7 @@
 <div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
 
 @section Scripts {
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFaoOy_dtwHglwcp9TrJgAP62TAsV5Fys&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
         <script>
             var map;
             var markers = [];

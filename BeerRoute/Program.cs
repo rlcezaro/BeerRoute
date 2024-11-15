@@ -1,7 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using BeerRoute.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Adicionar suporte para appsettings.Local.json
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+
 builder.Services.AddDbContext<BeerRouteContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BeerRouteContext") ?? throw new InvalidOperationException("Connection string 'BeerRouteContext' not found.")));
 

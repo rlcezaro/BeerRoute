@@ -13,10 +13,12 @@ namespace BeerRoute.Controllers
     public class CervejariasController : Controller
     {
         private readonly BeerRouteContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CervejariasController(BeerRouteContext context)
+        public CervejariasController(BeerRouteContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: Cervejarias/List
@@ -38,8 +40,10 @@ namespace BeerRoute.Controllers
                 .Where(c => c.Latitude >= -90 && c.Latitude <= 90 && c.Longitude >= -180 && c.Longitude <= 180)
                 .ToListAsync();
 
+            ViewBag.ApiKey = _configuration["ApiSettings:ApiKey"];
             return View(cervejarias);
         }
+
 
 
         // GET: Cervejarias/Details/5
@@ -63,6 +67,7 @@ namespace BeerRoute.Controllers
         // GET: Cervejarias/Create
         public IActionResult Create()
         {
+            ViewBag.ApiKey = _configuration["ApiSettings:ApiKey"];
             return View();
         }
 

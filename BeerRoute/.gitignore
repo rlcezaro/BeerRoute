@@ -1,0 +1,25 @@
+﻿# Arquivos de configuração locais
+appsettings.Local.json
+
+# Arquivos de build
+bin/
+obj/
+
+# Arquivos de usuário do Visual Studio
+.vscode/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Arquivos de log
+*.log
+
+# Arquivos de backup
+*.bak
+*.swp
+
+# Arquivos temporários
+*.tmp
+*.temp
