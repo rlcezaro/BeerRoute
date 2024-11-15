@@ -1,149 +1,59 @@
 ﻿@model IEnumerable<BeerRoute.Models.Cervejaria>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Cadastro de Cervejarias";
 }
 
-<h1>Index</h1>
+<h1>Cadastro de Cervejarias</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Criar Nova Cervejaria</a>
+    <a asp-action="List" class="btn btn-secondary">Listar Cervejarias</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Endereco)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Latitude)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Longitude)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Preco)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descricao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Site)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Facebook)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Instagram)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImagemUrl)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Endereco)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Latitude)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Longitude)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Preco)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Site)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Facebook)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Instagram)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImagemUrl)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
 
-
-<div id="map" style="height: 500px; width: 100%;"></div>
+<div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
 
 @section Scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFaoOy_dtwHglwcp9TrJgAP62TAsV5Fys&callback=initMap" async defer></script>
-    <script>
-        var map;
-        var markers = [];
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFaoOy_dtwHglwcp9TrJgAP62TAsV5Fys&callback=initMap" async defer></script>
+        <script>
+            var map;
+            var markers = [];
 
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
-                center: { lat: -30.0333, lng: -51.2280 } // Centro das Cervejarias
-            });
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 15,
+                    center: { lat: -30.0333, lng: -51.2280 } // Centro das Cervejarias
+                });
 
-            loadCervejarias();
-        }
+                loadCervejarias();
+            }
 
-        function loadCervejarias() {
-            // Remove todos os marcadores existentes
-            markers.forEach(function (marker) {
-                marker.setMap(null);
-            });
-            markers = [];
+            function loadCervejarias() {
+                // Remove todos os marcadores existentes
+                markers.forEach(function (marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
 
-            var cervejarias = @Html.Raw(Json.Serialize(Model.Select(c => new { c.Nome, c.Latitude, c.Longitude })));
-            console.log(cervejarias); // Log para verificar o JSON
+                var cervejarias = @Html.Raw(Json.Serialize(Model.Select(c => new { c.Nome, Latitude = c.Latitude.ToString(), Longitude = c.Longitude.ToString() })));
+                console.log(cervejarias); // Log para verificar o JSON
 
-            cervejarias.forEach(function (cervejaria) {
-                var lat = parseFloat(cervejaria.Latitude);
-                var lng = parseFloat(cervejaria.Longitude);
+                cervejarias.forEach(function (cervejaria) {
+                    var lat = parseFloat(cervejaria.Latitude);
+                    var lng = parseFloat(cervejaria.Longitude);
 
-                if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-                    var marker = new google.maps.Marker({
-                        position: { lat: lat, lng: lng },
-                        map: map,
-                        title: cervejaria.Nome
-                    });
-                    markers.push(marker);
-                    console.log('Marker added: ', cervejaria); // Log para verificar cada marcador
-                } else {
-                    console.error('Invalid coordinates for: ', cervejaria);
-                }
-            });
-        }
-    </script>
+                    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                        var marker = new google.maps.Marker({
+                            position: { lat: lat, lng: lng },
+                            map: map,
+                            title: cervejaria.Nome
+                        });
+                        markers.push(marker);
+                        console.log('Marker added: ', cervejaria); // Log para verificar cada marcador
+                    } else {
+                        console.error('Invalid coordinates for: ', cervejaria);
+                    }
+                });
+            }
+        </script>
 }

@@ -19,6 +19,13 @@ namespace BeerRoute.Controllers
             _context = context;
         }
 
+        // GET: Cervejarias/List
+        public IActionResult List()
+        {
+            var cervejarias = _context.Cervejaria.ToList();
+            return View(cervejarias);
+        }
+
         // GET: Cervejarias
         public async Task<IActionResult> Index()
         {
@@ -66,9 +73,12 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Endereco,Latitude,Longitude,Preco,Descricao,Telefone,Email,Site,Facebook,Instagram,ImagemUrl")] Cervejaria cervejaria)
         {
+            // Arredondar Latitude e Longitude para 5 casas decimais
+            cervejaria.Latitude = Math.Round(cervejaria.Latitude, 5);
+            cervejaria.Longitude = Math.Round(cervejaria.Longitude, 5);
             //if (ModelState.IsValid)
             //{
-                _context.Add(cervejaria);
+            _context.Add(cervejaria);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             //}
@@ -102,28 +112,36 @@ namespace BeerRoute.Controllers
             {
                 return NotFound();
             }
+            // Arredondar Latitude e Longitude para 5 casas decimais
+            cervejaria.Latitude = Math.Round(cervejaria.Latitude, 5);
+            cervejaria.Longitude = Math.Round(cervejaria.Longitude, 5);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(cervejaria);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CervejariaExists(cervejaria.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cervejaria);
+            _context.Update(cervejaria);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
+            //        _context.Update(cervejaria);
+            //        await _context.SaveChangesAsync();
+            //    }
+            //    catch (DbUpdateConcurrencyException)
+            //    {
+            //        if (!CervejariaExists(cervejaria.Id))
+            //        {
+            //            return NotFound();
+            //        }
+            //        else
+            //        {
+            //            throw;
+            //        }
+            //    }
+            //    return RedirectToAction(nameof(Index));
+            ////}           
+            ////return View(cervejaria);
         }
 
         // GET: Cervejarias/Delete/5
