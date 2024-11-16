@@ -49,9 +49,11 @@
                         content: '<h3>@cervejaria.Nome</h3><p>@cervejaria.Endereco</p><p>Cervejas: @cervejas</p>'
                     });
 
-                    marker.addListener('click', function() {
-                        infoWindow.open(map, marker);
-                    });
+                    marker.addListener('click', (function(marker, infoWindow) {
+                        return function() {
+                            infoWindow.open(map, marker);
+                        };
+                    })(marker, infoWindow));
 
                     markers.push(marker);
                 </text>
