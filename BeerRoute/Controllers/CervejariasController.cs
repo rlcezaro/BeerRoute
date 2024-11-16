@@ -46,6 +46,7 @@ namespace BeerRoute.Controllers
 
 
 
+
         // GET: Cervejarias/Details/5
         public async Task<IActionResult> Details(int? id)
         {
