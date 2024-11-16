@@ -14,20 +14,40 @@ namespace BeerRoute.Controllers
     public class CervejariaTipoCervejasController : Controller
     {
         private readonly BeerRouteContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CervejariaTipoCervejasController(BeerRouteContext context)
+        public CervejariaTipoCervejasController(BeerRouteContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
+
+        public async Task<IActionResult> List()
+        {
+            var cervejariaTipoCervejas = await _context.CervejariaTipoCerveja
+                .Include(ctc => ctc.Cervejaria)
+                .Include(ctc => ctc.TipoCerveja)
+                .ToListAsync();
+
+            return View(cervejariaTipoCervejas);
+        }
+
 
         // GET: CervejariaTipoCervejas
         public async Task<IActionResult> Index()
         {
-            var cervejariaTipoCervejas = await _context.CervejariaTipoCerveja // Modificado
-                .Include(ctc => ctc.Cervejaria) // Adicionado
-                .Include(ctc => ctc.TipoCerveja) // Adicionado
-                .ToListAsync(); // Modificado
-            return View(cervejariaTipoCervejas); // Modificado
+            if (_context.CervejariaTipoCerveja == null)
+            {
+                return Problem("Entity set 'BeerRouteContext.CervejariaTipoCerveja' is null.");
+            }
+
+            var cervejariaTipoCervejas = await _context.CervejariaTipoCerveja
+                .Include(ctc => ctc.Cervejaria)
+                .Include(ctc => ctc.TipoCerveja)
+                .ToListAsync();
+
+            ViewBag.ApiKey = _configuration["ApiSettings:ApiKey"];
+            return View(cervejariaTipoCervejas);
         }
 
         // GET: CervejariaTipoCervejas/Details/5
@@ -50,34 +70,27 @@ namespace BeerRoute.Controllers
             }
 
             var cervejaria = cervejariaTipoCerveja.Cervejaria;
-
+            ViewBag.ApiKey = _configuration["ApiSettings:ApiKey"];
             return View(cervejaria);
         }
-
 
         // GET: CervejariaTipoCervejas/Create
         public IActionResult Create()
         {
             var vm_cervejarias = new ViewModelCervejariaCervejas();
-            vm_cervejarias.Cervejarias = _context.Cervejaria.ToList();
-            vm_cervejarias.TipoCervejas = _context.TipoCerveja.ToList();
+            vm_cervejarias.Cervejarias = _context.Cervejaria?.ToList() ?? new List<Cervejaria>();
+            vm_cervejarias.TipoCervejas = _context.TipoCerveja?.ToList() ?? new List<TipoCerveja>();
             return View(vm_cervejarias);
         }
 
         // POST: CervejariaTipoCervejas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CervejariaId,TipoCervejaId")] CervejariaTipoCerveja cervejariaTipoCerveja)
         {
-            //if (ModelState.IsValid)
-            //{
             _context.Add(cervejariaTipoCerveja);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-            //}
-            //return View(cervejariaTipoCerveja);
         }
 
         // GET: CervejariaTipoCervejas/Edit/5
@@ -97,8 +110,6 @@ namespace BeerRoute.Controllers
         }
 
         // POST: CervejariaTipoCervejas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CervejariaId,TipoCervejaId")] CervejariaTipoCerveja cervejariaTipoCerveja)
@@ -140,8 +151,8 @@ namespace BeerRoute.Controllers
             }
 
             var cervejariaTipoCerveja = await _context.CervejariaTipoCerveja
-                .Include(ctc => ctc.Cervejaria) // Adicionado
-                .Include(ctc => ctc.TipoCerveja) // Adicionado
+                .Include(ctc => ctc.Cervejaria)
+                .Include(ctc => ctc.TipoCerveja)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cervejariaTipoCerveja == null)
             {
@@ -158,7 +169,7 @@ namespace BeerRoute.Controllers
         {
             if (_context.CervejariaTipoCerveja == null)
             {
-                return Problem("Entity set 'BeerRouteContext.CervejariaTipoCerveja'  is null.");
+                return Problem("Entity set 'BeerRouteContext.CervejariaTipoCerveja' is null.");
             }
             var cervejariaTipoCerveja = await _context.CervejariaTipoCerveja.FindAsync(id);
             if (cervejariaTipoCerveja != null)

@@ -1,41 +1,61 @@
 ﻿@model IEnumerable<BeerRoute.Models.CervejariaTipoCerveja>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Cadastro de Relações Cervejaria - Tipo de Cerveja";
+
+    var apiKey = ViewBag.ApiKey;
+    var beerIconUrl = Url.Content("~/images/lupuloicon.svg");
 }
 
-<h1>Index</h1>
+<h1>Cadastro de Relações Cervejaria - Tipo de Cerveja</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Criar Nova Relação</a>
+    <a asp-action="List" class="btn btn-secondary">Listar Relações</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Cervejaria.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoCerveja.Nome)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Cervejaria.Nome)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TipoCerveja.Nome)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+
+<div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
+    <script>
+        var map;
+        var markers = [];
+        var beerIconUrl = '@beerIconUrl';
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -30.0344, lng: -51.2280 },
+                zoom: 15
+            });
+
+            @foreach (var item in Model.GroupBy(m => m.Cervejaria))
+            {
+                var cervejaria = item.Key;
+                var cervejas = string.Join(", ", item.Select(i => i.TipoCerveja.Nome));
+
+                <text>
+                    var marker = new google.maps.Marker({
+                        position: { lat: @cervejaria.Latitude, lng: @cervejaria.Longitude },
+                        map: map,
+                        title: '@cervejaria.Nome',
+                        icon: {
+                            url: beerIconUrl,
+                            scaledSize: new google.maps.Size(48, 48)
+                        }
+                    });
+
+                    var infoWindow = new google.maps.InfoWindow({
+                        content: '<h3>@cervejaria.Nome</h3><p>@cervejaria.Endereco</p><p>Cervejas: @cervejas</p>'
+                    });
+
+                    marker.addListener('click', function() {
+                        infoWindow.open(map, marker);
+                    });
+
+                    markers.push(marker);
+                </text>
+            }
         }
-    </tbody>
-</table>
+    </script>
+}

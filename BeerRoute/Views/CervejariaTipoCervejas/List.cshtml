@@ -1,0 +1,35 @@
+﻿@model IEnumerable<BeerRoute.Models.CervejariaTipoCerveja>
+
+@{
+    ViewData["Title"] = "Lista de Relações Cervejaria - Tipo de Cerveja";
+}
+
+<h1>Lista de Relações Cervejaria - Tipo de Cerveja</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Criar Nova Relação</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar ao Mapa</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cervejaria</th>
+            <th>Tipos de Cerveja</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cervejariaGroup in Model.GroupBy(m => m.Cervejaria))
+        {
+            <tr>
+                <td>@cervejariaGroup.Key.Nome</td>
+                <td>
+                    @foreach (var tipoCerveja in cervejariaGroup.Select(m => m.TipoCerveja.Nome))
+                    {
+                        <span class="badge bg-secondary">@tipoCerveja</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
