@@ -185,5 +185,27 @@ namespace BeerRoute.Controllers
         {
             return (_context.CervejariaTipoCerveja?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        // GET: CervejariaTipoCervejas/Manage/5
+        // This method is used to manage the types of beer that a brewery produces.
+        public async Task<IActionResult> Manage(int? id)
+        {
+            if (id == null || _context.Cervejaria == null)
+            {
+                return NotFound();
+            }
+
+            var cervejaria = await _context.Cervejaria
+                .Include(c => c.CervejariaTiposCervejas)
+                .ThenInclude(ctc => ctc.TipoCerveja)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (cervejaria == null)
+            {
+                return NotFound();
+            }
+
+            return View(cervejaria);
+        }
     }
 }

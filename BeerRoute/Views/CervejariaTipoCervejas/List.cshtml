@@ -16,18 +16,23 @@
         <tr>
             <th>Cervejaria</th>
             <th>Tipos de Cerveja</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var cervejariaGroup in Model.GroupBy(m => m.Cervejaria))
+
         {
             <tr>
                 <td>@cervejariaGroup.Key.Nome</td>
                 <td>
-                    @foreach (var tipoCerveja in cervejariaGroup.Select(m => m.TipoCerveja.Nome))
+                    @foreach (var tipoCerveja in cervejariaGroup)
                     {
-                        <span class="badge bg-secondary">@tipoCerveja</span>
+                        <span class="badge bg-secondary">@tipoCerveja.TipoCerveja.Nome</span>
                     }
+                </td>
+                <td>
+                    <a asp-action="Manage" asp-route-id="@cervejariaGroup.Key.Id" class="btn btn-warning btn-sm">Gerenciar</a>
                 </td>
             </tr>
         }
