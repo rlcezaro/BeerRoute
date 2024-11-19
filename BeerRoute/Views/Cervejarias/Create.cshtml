@@ -1,12 +1,12 @@
 ﻿@model BeerRoute.Models.Cervejaria
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Cervejaria";
 
     var apiKey = ViewBag.ApiKey;
 }
 
-<h1>Create</h1>
+<h1>Criar Cervejaria</h1>
 
 <h4>Cervejaria</h4>
 <hr />
@@ -75,7 +75,7 @@
                 <span asp-validation-for="ImagemUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -85,7 +85,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
 </div>
 
 @section Scripts {

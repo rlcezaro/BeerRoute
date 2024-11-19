@@ -1,10 +1,10 @@
 ﻿@model BeerRoute.Models.Cervejaria
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Cervejaria";
 }
 
-<h1>Edit</h1>
+<h1>Editar Cervejaria</h1>
 
 <h4>Cervejaria</h4>
 <hr />
@@ -74,16 +74,18 @@
                 <span asp-validation-for="ImagemUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Salvar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

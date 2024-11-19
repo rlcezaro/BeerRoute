@@ -10,23 +10,23 @@
     <h4>CompraCredito</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Usuario)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Usuario.Email)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Usuario.Nome)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Quantidade)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Quantidade)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DataCompra)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataCompra)
+        <dd class="col-sm-10">
+            @Model.DataCompra.ToString("dd/MM/yyyy HH:mm")
         </dd>
     </dl>
 </div>

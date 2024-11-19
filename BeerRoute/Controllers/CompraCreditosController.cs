@@ -48,7 +48,7 @@ namespace BeerRoute.Controllers
         // GET: CompraCreditos/Create
         public IActionResult Create()
         {
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email");
+            ViewData["UsuarioNome"] = new SelectList(_context.Usuario, "Id", "Nome");
             return View();
         }
 
@@ -98,28 +98,32 @@ namespace BeerRoute.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(compraCredito);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CompraCreditoExists(compraCredito.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", compraCredito.UsuarioId);
-            return View(compraCredito);
+            _context.Update(compraCredito);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
+            //        _context.Update(compraCredito);
+            //        await _context.SaveChangesAsync();
+            //    }
+            //    catch (DbUpdateConcurrencyException)
+            //    {
+            //        if (!CompraCreditoExists(compraCredito.Id))
+            //        {
+            //            return NotFound();
+            //        }
+            //        else
+            //        {
+            //            throw;
+            //        }
+            //    }
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", compraCredito.UsuarioId);
+            //return View(compraCredito);
         }
 
         // GET: CompraCreditos/Delete/5

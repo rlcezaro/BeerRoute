@@ -1,15 +1,15 @@
 ﻿@model BeerRoute.Models.Usuario
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Usuário";
 }
 
-<h1>Create</h1>
+<h1>Criar Usuário</h1>
 
-<h4>Usuario</h4>
+<h4>Usuário</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -33,16 +33,18 @@
                 <span asp-validation-for="Creditos" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

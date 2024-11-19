@@ -95,27 +95,31 @@ namespace BeerRoute.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(tipoCerveja);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TipoCervejaExists(tipoCerveja.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(tipoCerveja);
+            _context.Update(tipoCerveja);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
+            //        _context.Update(tipoCerveja);
+            //        await _context.SaveChangesAsync();
+            //    }
+            //    catch (DbUpdateConcurrencyException)
+            //    {
+            //        if (!TipoCervejaExists(tipoCerveja.Id))
+            //        {
+            //            return NotFound();
+            //        }
+            //        else
+            //        {
+            //            throw;
+            //        }
+            //    }
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //return View(tipoCerveja);
         }
 
         // GET: TipoCervejas/Delete/5
