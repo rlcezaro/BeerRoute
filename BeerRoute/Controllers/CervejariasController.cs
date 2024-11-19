@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeerRoute.Data;
 using BeerRoute.Models;
+using System.Globalization;
 
 namespace BeerRoute.Controllers
 {
@@ -82,14 +83,16 @@ namespace BeerRoute.Controllers
             // Arredondar Latitude e Longitude para 5 casas decimais
             cervejaria.Latitude = Math.Round(cervejaria.Latitude, 5);
             cervejaria.Longitude = Math.Round(cervejaria.Longitude, 5);
-            //if (ModelState.IsValid)
-            //{
+
+            // Forçar a formatação das coordenadas para usar ponto como separador decimal
+            cervejaria.Latitude = double.Parse(cervejaria.Latitude.ToString(CultureInfo.InvariantCulture));
+            cervejaria.Longitude = double.Parse(cervejaria.Longitude.ToString(CultureInfo.InvariantCulture));
+
             _context.Add(cervejaria);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            //}
-            //return View(cervejaria);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Cervejarias/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -118,36 +121,14 @@ namespace BeerRoute.Controllers
             {
                 return NotFound();
             }
-            // Arredondar Latitude e Longitude para 5 casas decimais
-            cervejaria.Latitude = Math.Round(cervejaria.Latitude, 5);
-            cervejaria.Longitude = Math.Round(cervejaria.Longitude, 5);
+
+            // Forçar a formatação das coordenadas para usar ponto como separador decimal
+            cervejaria.Latitude = double.Parse(cervejaria.Latitude.ToString(CultureInfo.InvariantCulture));
+            cervejaria.Longitude = double.Parse(cervejaria.Longitude.ToString(CultureInfo.InvariantCulture));
 
             _context.Update(cervejaria);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-
-
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
-            //        _context.Update(cervejaria);
-            //        await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateConcurrencyException)
-            //    {
-            //        if (!CervejariaExists(cervejaria.Id))
-            //        {
-            //            return NotFound();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-            //    return RedirectToAction(nameof(Index));
-            ////}           
-            ////return View(cervejaria);
         }
 
         // GET: Cervejarias/Delete/5

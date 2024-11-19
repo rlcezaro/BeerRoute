@@ -114,8 +114,10 @@
                     map: map
                 });
             }
-            document.getElementById('Latitude').value = location.lat();
-            document.getElementById('Longitude').value = location.lng();
+            var latitude = location.lat().toFixed(5);
+            var longitude = location.lng().toFixed(5);
+            document.getElementById('Latitude').value = latitude;
+            document.getElementById('Longitude').value = longitude;
         }
     </script>
 }
