@@ -275,17 +275,21 @@ namespace BeerRoute.Migrations
 
             modelBuilder.Entity("BeerRoute.Models.CervejariaTipoCerveja", b =>
                 {
-                    b.HasOne("BeerRoute.Models.Cervejaria", null)
+                    b.HasOne("BeerRoute.Models.Cervejaria", "Cervejaria")
                         .WithMany("CervejariaTiposCervejas")
                         .HasForeignKey("CervejariaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeerRoute.Models.TipoCerveja", null)
+                    b.HasOne("BeerRoute.Models.TipoCerveja", "TipoCerveja")
                         .WithMany("CervejariaTiposCervejas")
                         .HasForeignKey("TipoCervejaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Cervejaria");
+
+                    b.Navigation("TipoCerveja");
                 });
 
             modelBuilder.Entity("BeerRoute.Models.CompraCredito", b =>

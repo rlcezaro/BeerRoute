@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeerRoute.Models
 {
@@ -10,11 +11,12 @@ namespace BeerRoute.Models
         public string Nome { get; set; }
         [Required]
         public string Endereco { get; set; }
-        [Range(-90, 90, ErrorMessage = "A latitude deve estar entre -90 e 90.")]
+        [Range(-90, 90, ErrorMessage = "A latitude deve estar entre -90 e 90.")]        
         public double Latitude { get; set; }
-        [Range(-180, 180, ErrorMessage = "A longitude deve estar entre -180 e 180.")]
+        [Range(-180, 180, ErrorMessage = "A longitude deve estar entre -180 e 180.")]        
         public double Longitude { get; set; }
         [Range(0, 1000)]
+        [DataType(DataType.Currency)]
         public decimal Preco { get; set; }
         public string Descricao { get; set; }
         [Phone]

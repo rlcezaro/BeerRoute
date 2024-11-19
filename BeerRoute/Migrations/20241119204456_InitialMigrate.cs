@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BeerRoute.Migrations
 {
-    public partial class Inicial : Migration
+    public partial class InitialMigrate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,6 +34,26 @@ namespace BeerRoute.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TipoCerveja",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Estilo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Pais = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Fabricante = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IBU = table.Column<int>(type: "int", nullable: false),
+                    ABV = table.Column<double>(type: "float", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ImagemUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoCerveja", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Usuario",
                 columns: table => new
                 {
@@ -47,26 +67,6 @@ namespace BeerRoute.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Usuario", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CervejariaTipoCerveja",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CervejariaId = table.Column<int>(type: "int", nullable: false),
-                    TipoCervejaId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CervejariaTipoCerveja", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CervejariaTipoCerveja_Cervejaria_CervejariaId",
-                        column: x => x.CervejariaId,
-                        principalTable: "Cervejaria",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,6 +87,32 @@ namespace BeerRoute.Migrations
                         name: "FK_Evento_Cervejaria_CervejariaId",
                         column: x => x.CervejariaId,
                         principalTable: "Cervejaria",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CervejariaTipoCerveja",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CervejariaId = table.Column<int>(type: "int", nullable: false),
+                    TipoCervejaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CervejariaTipoCerveja", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CervejariaTipoCerveja_Cervejaria_CervejariaId",
+                        column: x => x.CervejariaId,
+                        principalTable: "Cervejaria",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CervejariaTipoCerveja_TipoCerveja_TipoCervejaId",
+                        column: x => x.TipoCervejaId,
+                        principalTable: "TipoCerveja",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -148,6 +174,11 @@ namespace BeerRoute.Migrations
                 column: "CervejariaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CervejariaTipoCerveja_TipoCervejaId",
+                table: "CervejariaTipoCerveja",
+                column: "TipoCervejaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CompraCredito_UsuarioId",
                 table: "CompraCredito",
                 column: "UsuarioId");
@@ -181,6 +212,9 @@ namespace BeerRoute.Migrations
 
             migrationBuilder.DropTable(
                 name: "Visita");
+
+            migrationBuilder.DropTable(
+                name: "TipoCerveja");
 
             migrationBuilder.DropTable(
                 name: "Cervejaria");

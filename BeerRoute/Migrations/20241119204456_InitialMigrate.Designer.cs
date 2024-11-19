@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeerRoute.Migrations
 {
     [DbContext(typeof(BeerRouteContext))]
-    [Migration("20241106225835_Inicial")]
-    partial class Inicial
+    [Migration("20241119204456_InitialMigrate")]
+    partial class InitialMigrate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -101,6 +101,8 @@ namespace BeerRoute.Migrations
 
                     b.HasIndex("CervejariaId");
 
+                    b.HasIndex("TipoCervejaId");
+
                     b.ToTable("CervejariaTipoCerveja");
                 });
 
@@ -157,6 +159,54 @@ namespace BeerRoute.Migrations
                     b.HasIndex("CervejariaId");
 
                     b.ToTable("Evento");
+                });
+
+            modelBuilder.Entity("BeerRoute.Models.TipoCerveja", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<double>("ABV")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Estilo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Fabricante")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("IBU")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImagemUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Pais")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TipoCerveja");
                 });
 
             modelBuilder.Entity("BeerRoute.Models.Usuario", b =>
@@ -227,11 +277,21 @@ namespace BeerRoute.Migrations
 
             modelBuilder.Entity("BeerRoute.Models.CervejariaTipoCerveja", b =>
                 {
-                    b.HasOne("BeerRoute.Models.Cervejaria", null)
+                    b.HasOne("BeerRoute.Models.Cervejaria", "Cervejaria")
                         .WithMany("CervejariaTiposCervejas")
                         .HasForeignKey("CervejariaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BeerRoute.Models.TipoCerveja", "TipoCerveja")
+                        .WithMany("CervejariaTiposCervejas")
+                        .HasForeignKey("TipoCervejaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cervejaria");
+
+                    b.Navigation("TipoCerveja");
                 });
 
             modelBuilder.Entity("BeerRoute.Models.CompraCredito", b =>
@@ -282,6 +342,11 @@ namespace BeerRoute.Migrations
                     b.Navigation("Eventos");
 
                     b.Navigation("Visitas");
+                });
+
+            modelBuilder.Entity("BeerRoute.Models.TipoCerveja", b =>
+                {
+                    b.Navigation("CervejariaTiposCervejas");
                 });
 
             modelBuilder.Entity("BeerRoute.Models.Usuario", b =>
