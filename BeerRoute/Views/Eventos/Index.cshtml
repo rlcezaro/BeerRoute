@@ -1,53 +1,35 @@
 ﻿@model IEnumerable<BeerRoute.Models.Evento>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de Eventos";
 }
 
-<h1>Index</h1>
+<h1>Lista de Eventos</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Create">Criar Novo</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Cervejaria)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descricao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataEvento)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cervejaria.Endereco)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataEvento)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="row">
+    @foreach (var item in Model)
+
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Nome)</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text"><strong>Cervejaria:</strong> @Html.DisplayFor(modelItem => item.Cervejaria.Nome)</p>
+                    <p class="card-text"><strong>Descrição:</strong> @Html.DisplayFor(modelItem => item.Descricao)</p>
+                    <p class="card-text"><strong>Data do Evento:</strong> @Html.DisplayFor(modelItem => item.DataEvento)</p>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-primary btn-sm mb-1" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                    <a class="btn btn-info btn-sm mb-1" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                    <a class="btn btn-danger btn-sm mb-1" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,10 +1,67 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+
+    var imagensCervejarias = new List<(string Url, string Titulo, string Descricao)>
+    {
+        ("/images/cervejaria1.jpg", "As melhores Cervejarias", "Você busca e encontra aqui."),
+        ("/images/cervejaria2.jpg", "Cervejaria Artesanal de Qualidade", "Aprecie a cerveja local da sua região."),
+        ("/images/cervejaria3.jpg", "Muita variedade de torneiras", "Explore cervejas de todo o mundo.")
+    };
 }
 
+<style>
+    .carousel-img {
+        height: 60vh; /* Define a altura como metade da altura da viewport */
+        object-fit: cover; /* Mantém a proporção da imagem */
+    }
+
+    .logo {
+        max-height: 100px; /* Define a altura máxima do logotipo */
+        margin-bottom: 20px; /* Espaçamento abaixo do logotipo */
+    }
+</style>
+
 <div class="text-center">
+    <img src="/images/logo.svg" alt="Logotipo do BeerRoute" class="logo">
     <h1 class="display-4">Bem vindo ao BeerRoute</h1>
-    <p>BeerRoute é uma aplicação web que te ajuda a encontrar a cerveja perfeita em sua área.</p>
-    <p>Clique em "Cervejarias" ou "Cervejas" na barra de navegação para iniciar.</p>
-    <p>Aproveite!</p>
+    <p>Uma aplicação web que te ajuda a encontrar a cerveja perfeita em sua área.</p>
+    <p>Navegue pelo nosso menu e aproveite.</p> 
 </div>
+
+<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        @for (int i = 0; i < imagensCervejarias.Count; i++)
+
+        {
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i + 1)"></button>
+        }
+    </div>
+    <div class="carousel-inner">
+        @for (int i = 0; i < imagensCervejarias.Count; i++)
+
+        {
+            <div class="carousel-item @(i == 0 ? "active" : "")">
+                <img src="@imagensCervejarias[i].Url" class="d-block w-100 carousel-img" alt="@imagensCervejarias[i].Titulo">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>@imagensCervejarias[i].Titulo</h5>
+                    <p>@imagensCervejarias[i].Descricao</p>
+                </div>
+            </div>
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Próximo</span>
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+        $('.carousel').carousel();
+    </script>
+}
+

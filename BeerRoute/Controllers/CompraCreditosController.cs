@@ -82,7 +82,7 @@ namespace BeerRoute.Controllers
             {
                 return NotFound();
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", compraCredito.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", compraCredito.UsuarioId);
             return View(compraCredito);
         }
 

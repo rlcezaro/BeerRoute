@@ -49,8 +49,8 @@ namespace BeerRoute.Controllers
         // GET: Visitas/Create
         public IActionResult Create()
         {
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco");
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email");
+            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome");
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome");
             return View();
         }
 
@@ -61,14 +61,14 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UsuarioId,CervejariaId,DataVisita,CreditosUtilizados,Avaliacao,Comentario")] Visita visita)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Add(visita);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", visita.CervejariaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", visita.UsuarioId);
+            //}
+            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", visita.CervejariaId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visita.UsuarioId);
             return View(visita);
         }
 
@@ -85,8 +85,8 @@ namespace BeerRoute.Controllers
             {
                 return NotFound();
             }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", visita.CervejariaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", visita.UsuarioId);
+            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", visita.CervejariaId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visita.UsuarioId);
             return View(visita);
         }
 
@@ -97,33 +97,33 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UsuarioId,CervejariaId,DataVisita,CreditosUtilizados,Avaliacao,Comentario")] Visita visita)
         {
-            if (id != visita.Id)
-            {
-                return NotFound();
-            }
+            //if (id != visita.Id)
+            //{
+            //    return NotFound();
+            //}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
                     _context.Update(visita);
                     await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VisitaExists(visita.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                //}
+                //catch (DbUpdateConcurrencyException)
+                //{
+                //    if (!VisitaExists(visita.Id))
+                //    {
+                //        return NotFound();
+                //    }
+                //    else
+                //    {
+                //        throw;
+                //    }
+                //}
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", visita.CervejariaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Email", visita.UsuarioId);
+            //}
+            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", visita.CervejariaId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visita.UsuarioId);
             return View(visita);
         }
 

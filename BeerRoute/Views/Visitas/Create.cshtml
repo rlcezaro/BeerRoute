@@ -1,56 +1,56 @@
 ﻿@model BeerRoute.Models.Visita
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar";
 }
 
-<h1>Create</h1>
+<h1>Criar</h1>
 
-<h4>Visita</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioId"></select>
+                <label asp-for="UsuarioId" class="control-label">Usuário</label>
+                <select asp-for="UsuarioId" class="form-control" asp-items="ViewBag.UsuarioId"></select>
+                <span asp-validation-for="UsuarioId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CervejariaId" class="control-label"></label>
-                <select asp-for="CervejariaId" class ="form-control" asp-items="ViewBag.CervejariaId"></select>
+                <label asp-for="CervejariaId" class="control-label">Cervejaria</label>
+                <select asp-for="CervejariaId" class="form-control" asp-items="ViewBag.CervejariaId"></select>
+                <span asp-validation-for="CervejariaId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DataVisita" class="control-label"></label>
+                <label asp-for="DataVisita" class="control-label">Data da Visita</label>
                 <input asp-for="DataVisita" class="form-control" />
                 <span asp-validation-for="DataVisita" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreditosUtilizados" class="control-label"></label>
+                <label asp-for="CreditosUtilizados" class="control-label">Créditos Gastos</label>
                 <input asp-for="CreditosUtilizados" class="form-control" />
                 <span asp-validation-for="CreditosUtilizados" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Avaliacao" class="control-label"></label>
+                <label asp-for="Avaliacao" class="control-label">Avaliação</label>
                 <input asp-for="Avaliacao" class="form-control" />
                 <span asp-validation-for="Avaliacao" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Comentario" class="control-label"></label>
+                <label asp-for="Comentario" class="control-label">Comentário</label>
                 <input asp-for="Comentario" class="form-control" />
                 <span asp-validation-for="Comentario" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn btn-primary" />
+                <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

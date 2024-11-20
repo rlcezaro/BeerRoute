@@ -1,20 +1,19 @@
 ﻿@model BeerRoute.Models.CompraCredito
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Compra de Crédito";
 }
 
-<h1>Create</h1>
+<h1>Criar Compra de Crédito</h1>
 
-<h4>CompraCredito</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UsuarioId" class="control-label">Nome</label>
-                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioNome"></select>
+                <select asp-for="UsuarioId" class="form-control" asp-items="ViewBag.UsuarioNome"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Quantidade" class="control-label"></label>
@@ -26,23 +25,16 @@
                 <input asp-for="DataCompra" class="form-control" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" readonly />
                 <span asp-validation-for="DataCompra" class="text-danger"></span>
             </div>
-
-            @* <div class="form-group">
-                <label asp-for="DataCompra" class="control-label"></label>
-                <input asp-for="DataCompra" class="form-control" />
-                <span asp-validation-for="DataCompra" class="text-danger"></span>
-            </div> *@
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn btn-primary" />
+                <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

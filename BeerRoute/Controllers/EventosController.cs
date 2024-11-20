@@ -48,7 +48,7 @@ namespace BeerRoute.Controllers
         // GET: Eventos/Create
         public IActionResult Create()
         {
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco");
+            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome");
             return View();
         }
 
@@ -59,14 +59,14 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CervejariaId,Nome,Descricao,DataEvento")] Evento evento)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Add(evento);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", evento.CervejariaId);
-            return View(evento);
+            //}
+            //ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", evento.CervejariaId);
+            //return View(evento);
         }
 
         // GET: Eventos/Edit/5
@@ -82,7 +82,7 @@ namespace BeerRoute.Controllers
             {
                 return NotFound();
             }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", evento.CervejariaId);
+            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", evento.CervejariaId);
             return View(evento);
         }
 
@@ -93,33 +93,34 @@ namespace BeerRoute.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CervejariaId,Nome,Descricao,DataEvento")] Evento evento)
         {
-            if (id != evento.Id)
-            {
-                return NotFound();
-            }
+            //if (id != evento.Id)
+            //{
+            //    return NotFound();
+            //}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(evento);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventoExists(evento.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", evento.CervejariaId);
-            return View(evento);
+            //if (ModelState.IsValid)
+            //{
+            ////    try
+            //    {
+            _context.Update(evento);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+            //    }
+            //    catch (DbUpdateConcurrencyException)
+            //    {
+            //        if (!EventoExists(evento.Id))
+            //        {
+            //            return NotFound();
+            //        }
+            //        else
+            //        {
+            //            throw;
+            //        }
+            //    }
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Endereco", evento.CervejariaId);
+            //return View(evento);
         }
 
         // GET: Eventos/Delete/5

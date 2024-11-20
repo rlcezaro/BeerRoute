@@ -1,20 +1,20 @@
 ﻿@model BeerRoute.Models.Evento
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Evento";
 }
 
-<h1>Create</h1>
+<h1>Criar Evento</h1>
 
-<h4>Evento</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="CervejariaId" class="control-label"></label>
-                <select asp-for="CervejariaId" class ="form-control" asp-items="ViewBag.CervejariaId"></select>
+                <label asp-for="CervejariaId" class="control-label">Cervejaria</label>
+                <select asp-for="CervejariaId" class="form-control" asp-items="ViewBag.CervejariaId"></select>
+                <span asp-validation-for="CervejariaId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Nome" class="control-label"></label>
@@ -32,16 +32,18 @@
                 <span asp-validation-for="DataEvento" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
