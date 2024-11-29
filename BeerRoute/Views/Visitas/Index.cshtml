@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Marcando uma Visita";
     var apiKey = ViewBag.ApiKey;
+    var userLat = -30.03488;
+    var userLng = -51.22647;
 }
 
 <h1>Marcando uma Visita</h1>
@@ -28,17 +30,17 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Usuario.Nome)</td>
+                    <td>@item.Usuario.Nome</td>
                     <td>
                         @foreach (var cervejaria in item.VisitaCervejarias)
                         {
                             <p>@cervejaria.Cervejaria.Nome</p>
                         }
                     </td>
-                    <td>@Html.DisplayFor(modelItem => item.DataVisita)</td>
-                    <td>@Html.DisplayFor(modelItem => item.CreditosUtilizados)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Avaliacao)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Comentario)</td>
+                    <td>@item.DataVisita</td>
+                    <td>@item.CreditosUtilizados</td>
+                    <td>@item.Avaliacao</td>
+                    <td>@item.Comentario</td>
                     <td>
                         <a class="btn btn-primary btn-sm mb-1" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                         <a class="btn btn-info btn-sm mb-1" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
@@ -52,54 +54,59 @@
 
 <div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
 
-@section Scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
-    <script>
-        var map;
-        var directionsService;
-        var directionsRenderer;
+<script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
+<script>
+    var map;
+    var directionsService;
+    var directionsRenderer;
 
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: -30.0344, lng: -51.2280 },
-                zoom: 12
-            });
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: @userLat, lng: @userLng },
+            zoom: 12
+        });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
+        calculateAndDisplayRoute();
+    }
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer();
-            directionsRenderer.setMap(map);
-
-            calculateAndDisplayRoute();
-        }
-
-        function calculateAndDisplayRoute() {
-            var waypoints = []
-        @foreach (var item in Model)
+    function calculateAndDisplayRoute() {
+        var waypoints = [];
+    @foreach (var item in Model)
+    {
+        @foreach (var cervejaria in item.VisitaCervejarias)
         {
-            foreach (var cervejaria in item.VisitaCervejarias)
+            <text>
+                        waypoints.push({
+                            location: new google.maps.LatLng(@cervejaria.Cervejaria.Latitude, @cervejaria.Cervejaria.Longitude),
+                            stopover: true
+                        });
+            </text>
+        }
+    }
+
+        if (waypoints.length < 1) {
+            return;
+        }
+
+        var start = { lat: @userLat, lng: @userLng };
+        var end = waypoints.pop().location;
+
+        directionsService.route(
             {
-                <text>waypoints.push({ lat: @cervejaria.Cervejaria.Latitude, lng: @cervejaria.Cervejaria.Longitude });</text>
-            }
-        }
-
-            var start = waypoints.shift();
-            var end = waypoints.pop();
-
-            directionsService.route(
-                {
-                    origin: start,
-                    destination: end,
-                    waypoints: waypoints.map(function(location) { return { location: location, stopover: true }; }),
-                    travelMode: google.maps.TravelMode.DRIVING
-                },
-                function(response, status) {
-                    if (status === google.maps.DirectionsStatus.OK) {
-                        directionsRenderer.setDirections(response);
-                    } else {
-                        window.alert('Directions request failed due to ' + status);
-                    }
+                origin: start,
+                destination: end,
+                waypoints: waypoints,
+                travelMode: google.maps.TravelMode.DRIVING
+            },
+            function(response, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
                 }
-            );
-        }
-    </script>
-}
+            }
+        );
+    }
+</script>
