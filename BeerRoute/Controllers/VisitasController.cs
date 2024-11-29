@@ -7,22 +7,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeerRoute.Data;
 using BeerRoute.Models;
+using BeerRoute.Models.ViewModels;
+using Microsoft.Extensions.Configuration;
 
 namespace BeerRoute.Controllers
 {
     public class VisitasController : Controller
     {
         private readonly BeerRouteContext _context;
+        private readonly IConfiguration _configuration;
 
-        public VisitasController(BeerRouteContext context)
+        public VisitasController(BeerRouteContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: Visitas
         public async Task<IActionResult> Index()
         {
-            var beerRouteContext = _context.Visita.Include(v => v.Cervejaria).Include(v => v.Usuario);
+            var beerRouteContext = _context.Visita
+                .Include(v => v.Usuario)
+                .Include(v => v.VisitaCervejarias)
+                    .ThenInclude(vc => vc.Cervejaria);
+            ViewBag.ApiKey = _configuration["ApiSettings:ApiKey"];
             return View(await beerRouteContext.ToListAsync());
         }
 
@@ -35,8 +43,9 @@ namespace BeerRoute.Controllers
             }
 
             var visita = await _context.Visita
-                .Include(v => v.Cervejaria)
                 .Include(v => v.Usuario)
+                .Include(v => v.VisitaCervejarias)
+                    .ThenInclude(vc => vc.Cervejaria)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (visita == null)
             {
@@ -49,27 +58,35 @@ namespace BeerRoute.Controllers
         // GET: Visitas/Create
         public IActionResult Create()
         {
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome");
+            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome");
             ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome");
             return View();
         }
 
         // POST: Visitas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UsuarioId,CervejariaId,DataVisita,CreditosUtilizados,Avaliacao,Comentario")] Visita visita)
+        public async Task<IActionResult> Create([Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,CervejariaIds")] ViewModelVisita visitaViewModel)
         {
-            //if (ModelState.IsValid)
-            //{
+            if (ModelState.IsValid)
+            {
+                var visita = new Visita
+                {
+                    UsuarioId = visitaViewModel.UsuarioId,
+                    DataVisita = visitaViewModel.DataVisita,
+                    CreditosUtilizados = visitaViewModel.CreditosUtilizados,
+                    Avaliacao = visitaViewModel.Avaliacao,
+                    Comentario = visitaViewModel.Comentario,
+                    VisitaCervejarias = visitaViewModel.CervejariaIds.Select(id => new VisitaCervejaria { CervejariaId = id }).ToList()
+                };
+
                 _context.Add(visita);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            //}
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", visita.CervejariaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visita.UsuarioId);
-            return View(visita);
+            }
+            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome", visitaViewModel.CervejariaIds);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+            return View(visitaViewModel);
         }
 
         // GET: Visitas/Edit/5
@@ -80,51 +97,82 @@ namespace BeerRoute.Controllers
                 return NotFound();
             }
 
-            var visita = await _context.Visita.FindAsync(id);
+            var visita = await _context.Visita
+                .Include(v => v.VisitaCervejarias)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (visita == null)
             {
                 return NotFound();
             }
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", visita.CervejariaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visita.UsuarioId);
-            return View(visita);
+
+            var visitaViewModel = new ViewModelVisita
+            {
+                Id = visita.Id,
+                UsuarioId = visita.UsuarioId,
+                DataVisita = visita.DataVisita,
+                CreditosUtilizados = visita.CreditosUtilizados,
+                Avaliacao = visita.Avaliacao,
+                Comentario = visita.Comentario,
+                CervejariaIds = visita.VisitaCervejarias.Select(vc => vc.CervejariaId).ToList()
+            };
+
+            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome", visitaViewModel.CervejariaIds);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+            return View(visitaViewModel);
         }
 
         // POST: Visitas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UsuarioId,CervejariaId,DataVisita,CreditosUtilizados,Avaliacao,Comentario")] Visita visita)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,CervejariaIds")] ViewModelVisita visitaViewModel)
         {
-            //if (id != visita.Id)
-            //{
-            //    return NotFound();
-            //}
+            if (id != visitaViewModel.Id)
+            {
+                return NotFound();
+            }
 
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var visita = await _context.Visita
+                        .Include(v => v.VisitaCervejarias)
+                        .FirstOrDefaultAsync(m => m.Id == id);
+
+                    if (visita == null)
+                    {
+                        return NotFound();
+                    }
+
+                    visita.UsuarioId = visitaViewModel.UsuarioId;
+                    visita.DataVisita = visitaViewModel.DataVisita;
+                    visita.CreditosUtilizados = visitaViewModel.CreditosUtilizados;
+                    visita.Avaliacao = visitaViewModel.Avaliacao;
+                    visita.Comentario = visitaViewModel.Comentario;
+
+                    // Atualizar as cervejarias da visita
+                    visita.VisitaCervejarias.Clear();
+                    visita.VisitaCervejarias = visitaViewModel.CervejariaIds.Select(cid => new VisitaCervejaria { VisitaId = visita.Id, CervejariaId = cid }).ToList();
+
                     _context.Update(visita);
                     await _context.SaveChangesAsync();
-                //}
-                //catch (DbUpdateConcurrencyException)
-                //{
-                //    if (!VisitaExists(visita.Id))
-                //    {
-                //        return NotFound();
-                //    }
-                //    else
-                //    {
-                //        throw;
-                //    }
-                //}
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!VisitaExists(visitaViewModel.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
-            //}
-            ViewData["CervejariaId"] = new SelectList(_context.Cervejaria, "Id", "Nome", visita.CervejariaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visita.UsuarioId);
-            return View(visita);
+            }
+            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome", visitaViewModel.CervejariaIds);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+            return View(visitaViewModel);
         }
 
         // GET: Visitas/Delete/5
@@ -136,8 +184,9 @@ namespace BeerRoute.Controllers
             }
 
             var visita = await _context.Visita
-                .Include(v => v.Cervejaria)
                 .Include(v => v.Usuario)
+                .Include(v => v.VisitaCervejarias)
+                    .ThenInclude(vc => vc.Cervejaria)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (visita == null)
             {
@@ -154,21 +203,23 @@ namespace BeerRoute.Controllers
         {
             if (_context.Visita == null)
             {
-                return Problem("Entity set 'BeerRouteContext.Visita'  is null.");
+                return Problem("Entity set 'BeerRouteContext.Visita' is null.");
             }
-            var visita = await _context.Visita.FindAsync(id);
+            var visita = await _context.Visita
+                .Include(v => v.VisitaCervejarias)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (visita != null)
             {
                 _context.Visita.Remove(visita);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool VisitaExists(int id)
         {
-          return (_context.Visita?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Visita?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model BeerRoute.Models.Visita
+﻿@model BeerRoute.Models.ViewModels.ViewModelVisita
 
 @{
     ViewData["Title"] = "Criar";
@@ -17,9 +17,9 @@
                 <span asp-validation-for="UsuarioId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CervejariaId" class="control-label">Cervejaria</label>
-                <select asp-for="CervejariaId" class="form-control" asp-items="ViewBag.CervejariaId"></select>
-                <span asp-validation-for="CervejariaId" class="text-danger"></span>
+                <label asp-for="CervejariaIds" class="control-label">Cervejarias</label>
+                <select asp-for="CervejariaIds" class="form-control" asp-items="ViewBag.CervejariaIds" multiple></select>
+                <span asp-validation-for="CervejariaIds" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DataVisita" class="control-label">Data da Visita</label>

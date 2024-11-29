@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+
 namespace BeerRoute.Models
 {
     public class Visita
@@ -9,10 +11,6 @@ namespace BeerRoute.Models
         [Required]
         public Usuario Usuario { get; set; }
         [Required]
-        public int CervejariaId { get; set; }
-        [Required]
-        public Cervejaria Cervejaria { get; set; }
-        [Required]
         [DataType(DataType.Date)]
         public DateTime DataVisita { get; set; }
         [Range(0, int.MaxValue, ErrorMessage = "Os créditos utilizados devem ser um valor positivo.")]
@@ -20,5 +18,6 @@ namespace BeerRoute.Models
         [Range(1, 5, ErrorMessage = "A avaliação deve estar entre 1 e 5.")]
         public int Avaliacao { get; set; }
         public string Comentario { get; set; }
+        public ICollection<VisitaCervejaria> VisitaCervejarias { get; set; }
     }
 }

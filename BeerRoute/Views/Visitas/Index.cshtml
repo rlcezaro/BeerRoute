@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Marcando uma Visita";
+    var apiKey = ViewBag.ApiKey;
 }
 
 <h1>Marcando uma Visita</h1>
@@ -15,7 +16,7 @@
         <thead class="thead-dark">
             <tr>
                 <th>Usuário</th>
-                <th>Cervejaria</th>
+                <th>Cervejarias</th>
                 <th>Data da Visita</th>
                 <th>Créditos Gastos</th>
                 <th>Avaliação</th>
@@ -28,7 +29,12 @@
             {
                 <tr>
                     <td>@Html.DisplayFor(modelItem => item.Usuario.Nome)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Cervejaria.Nome)</td>
+                    <td>
+                        @foreach (var cervejaria in item.VisitaCervejarias)
+                        {
+                            <p>@cervejaria.Cervejaria.Nome</p>
+                        }
+                    </td>
                     <td>@Html.DisplayFor(modelItem => item.DataVisita)</td>
                     <td>@Html.DisplayFor(modelItem => item.CreditosUtilizados)</td>
                     <td>@Html.DisplayFor(modelItem => item.Avaliacao)</td>
@@ -43,3 +49,57 @@
         </tbody>
     </table>
 </div>
+
+<div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
+    <script>
+        var map;
+        var directionsService;
+        var directionsRenderer;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -30.0344, lng: -51.2280 },
+                zoom: 12
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            calculateAndDisplayRoute();
+        }
+
+        function calculateAndDisplayRoute() {
+            var waypoints = []
+        @foreach (var item in Model)
+        {
+            foreach (var cervejaria in item.VisitaCervejarias)
+            {
+                <text>waypoints.push({ lat: @cervejaria.Cervejaria.Latitude, lng: @cervejaria.Cervejaria.Longitude });</text>
+            }
+        }
+
+            var start = waypoints.shift();
+            var end = waypoints.pop();
+
+            directionsService.route(
+                {
+                    origin: start,
+                    destination: end,
+                    waypoints: waypoints.map(function(location) { return { location: location, stopover: true }; }),
+                    travelMode: google.maps.TravelMode.DRIVING
+                },
+                function(response, status) {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        directionsRenderer.setDirections(response);
+                    } else {
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                }
+            );
+        }
+    </script>
+}
