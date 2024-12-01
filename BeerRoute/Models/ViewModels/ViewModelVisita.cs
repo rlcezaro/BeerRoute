@@ -11,6 +11,7 @@ namespace BeerRoute.Models.ViewModels
         public int CreditosUtilizados { get; set; }
         public int Avaliacao { get; set; }
         public string Comentario { get; set; }
+        public string EstiloCerveja { get; set; } // Lista os estilos de cerveja
         public List<int> CervejariaIds { get; set; }
     }
 }

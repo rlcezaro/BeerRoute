@@ -17,8 +17,13 @@
                 <span asp-validation-for="UsuarioId" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EstiloCerveja" class="control-label">Estilo de Cerveja</label>
+                <select asp-for="EstiloCerveja" class="form-control" asp-items="ViewBag.EstiloCerveja" id="estiloCervejaSelect"></select>
+                <span asp-validation-for="EstiloCerveja" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="CervejariaIds" class="control-label">Cervejarias</label>
-                <select asp-for="CervejariaIds" class="form-control" asp-items="ViewBag.CervejariaIds" multiple></select>
+                <select asp-for="CervejariaIds" class="form-control" asp-items="ViewBag.CervejariaIds" multiple id="cervejariaSelect"></select>
                 <span asp-validation-for="CervejariaIds" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -53,4 +58,18 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            $('#estiloCervejaSelect').change(function () {
+                var estiloCerveja = $(this).val();
+                $.getJSON('@Url.Action("GetCervejariasByEstiloCerveja", "Visitas")', { estiloCerveja: estiloCerveja }, function (data) {
+                    var items = '<option value="">Selecione uma Cervejaria</option>';
+                    $.each(data, function (i, cervejaria) {
+                        items += '<option value="' + cervejaria.id + '">' + cervejaria.nome + '</option>';
+                    });
+                    $('#cervejariaSelect').html(items);
+                });
+            });
+        });
+    </script>
 }

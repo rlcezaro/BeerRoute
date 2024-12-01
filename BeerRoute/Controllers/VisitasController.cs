@@ -58,15 +58,16 @@ namespace BeerRoute.Controllers
         // GET: Visitas/Create
         public IActionResult Create()
         {
-            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome");
             ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome");
+            ViewData["EstiloCerveja"] = new SelectList(_context.TipoCerveja.Select(tc => tc.Estilo).Distinct());
+            ViewData["CervejariaIds"] = new SelectList(Enumerable.Empty<SelectListItem>(), "Id", "Nome");
             return View();
         }
 
         // POST: Visitas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,CervejariaIds")] ViewModelVisita visitaViewModel)
+        public async Task<IActionResult> Create([Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,EstiloCerveja,CervejariaIds")] ViewModelVisita visitaViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -84,11 +85,20 @@ namespace BeerRoute.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome", visitaViewModel.CervejariaIds);
             ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+            ViewData["EstiloCerveja"] = new SelectList(_context.TipoCerveja.Select(tc => tc.Estilo).Distinct(), visitaViewModel.EstiloCerveja);
+            ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
             return View(visitaViewModel);
         }
 
+        public JsonResult GetCervejariasByEstiloCerveja(string estiloCerveja)
+        {
+            var cervejarias = _context.CervejariaTipoCerveja
+                .Where(ctc => ctc.TipoCerveja.Estilo == estiloCerveja)
+                .Select(ctc => new { ctc.Cervejaria.Id, ctc.Cervejaria.Nome })
+                .ToList();
+            return Json(cervejarias);
+        }
         // GET: Visitas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
