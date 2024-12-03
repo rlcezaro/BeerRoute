@@ -16,7 +16,7 @@ namespace BeerRoute.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Required, DataType(DataType.Password)]
         [StringLength(100, MinimumLength = 6)]
         public string Senha { get; set; }
 
