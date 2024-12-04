@@ -92,7 +92,6 @@ namespace BeerRoute.Controllers
             return View(visitaViewModel);
         }
 
-
         public JsonResult GetCervejariasByEstiloCerveja(string estiloCerveja)
         {
             var cervejarias = _context.CervejariaTipoCerveja
@@ -101,6 +100,7 @@ namespace BeerRoute.Controllers
                 .ToList();
             return Json(cervejarias);
         }
+
         // GET: Visitas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -111,11 +111,19 @@ namespace BeerRoute.Controllers
 
             var visita = await _context.Visita
                 .Include(v => v.VisitaCervejarias)
+                .ThenInclude(vc => vc.Cervejaria)
+                .ThenInclude(c => c.CervejariaTiposCervejas)
+                .ThenInclude(ctc => ctc.TipoCerveja)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (visita == null)
             {
                 return NotFound();
             }
+
+            var estiloCerveja = visita.VisitaCervejarias
+                .SelectMany(vc => vc.Cervejaria.CervejariaTiposCervejas)
+                .Select(ctc => ctc.TipoCerveja.Estilo)
+                .FirstOrDefault();
 
             var visitaViewModel = new ViewModelVisita
             {
@@ -125,66 +133,60 @@ namespace BeerRoute.Controllers
                 CreditosUtilizados = visita.CreditosUtilizados,
                 Avaliacao = visita.Avaliacao,
                 Comentario = visita.Comentario,
-                CervejariaIds = visita.VisitaCervejarias.Select(vc => vc.CervejariaId).ToList()
+                EstiloCerveja = estiloCerveja ?? string.Empty,
+                CervejariaIds = visita.VisitaCervejarias?.Select(vc => vc.CervejariaId).ToList() ?? new List<int>(),
+                ModoViagem = visita.ModoViagem
             };
 
-            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome", visitaViewModel.CervejariaIds);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+            ViewData["UsuarioNome"] = _context.Usuario.FirstOrDefault(u => u.Id == visita.UsuarioId)?.Nome;
+            ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
             return View(visitaViewModel);
         }
 
         // POST: Visitas/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,CervejariaIds")] ViewModelVisita visitaViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,CervejariaIds,ModoViagem")] ViewModelVisita visitaViewModel)
         {
             if (id != visitaViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
                     var visita = await _context.Visita
                         .Include(v => v.VisitaCervejarias)
-                        .FirstOrDefaultAsync(m => m.Id == id);
-
-                    if (visita == null)
-                    {
-                        return NotFound();
-                    }
-
+                        .FirstOrDefaultAsync(v => v.Id == id);
                     visita.UsuarioId = visitaViewModel.UsuarioId;
                     visita.DataVisita = visitaViewModel.DataVisita;
                     visita.CreditosUtilizados = visitaViewModel.CreditosUtilizados;
                     visita.Avaliacao = visitaViewModel.Avaliacao;
                     visita.Comentario = visitaViewModel.Comentario;
-
-                    // Atualizar as cervejarias da visita
-                    visita.VisitaCervejarias.Clear();
-                    visita.VisitaCervejarias = visitaViewModel.CervejariaIds.Select(cid => new VisitaCervejaria { VisitaId = visita.Id, CervejariaId = cid }).ToList();
-
+                    visita.VisitaCervejarias = visitaViewModel.CervejariaIds.Select(cid => new VisitaCervejaria { CervejariaId = cid }).ToList();
+                    visita.ModoViagem = visitaViewModel.ModoViagem;
                     _context.Update(visita);
                     await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VisitaExists(visitaViewModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+            //    }
+            //    catch (DbUpdateConcurrencyException)
+            //    {
+            //        if (!VisitaExists(visitaViewModel.Id))
+            //        {
+            //            return NotFound();
+            //        }
+            //        else
+            //        {
+            //            throw;
+            //        }
+            //    }
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["CervejariaIds"] = new SelectList(_context.Cervejaria, "Id", "Nome", visitaViewModel.CervejariaIds);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
-            return View(visitaViewModel);
+            //}
+            //ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+            //ViewData["EstiloCerveja"] = new SelectList(_context.TipoCerveja.Select(tc => tc.Estilo).Distinct(), visitaViewModel.EstiloCerveja);
+            //ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
+            //return View(visitaViewModel);
         }
 
         // GET: Visitas/Delete/5

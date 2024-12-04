@@ -12,15 +12,23 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UsuarioId" />
             <div class="form-group">
                 <label asp-for="UsuarioId" class="control-label">Usuário</label>
-                <select asp-for="UsuarioId" class="form-control" asp-items="ViewBag.UsuarioId"></select>
-                <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                <input type="text" class="form-control" value="@ViewBag.UsuarioNome" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="EstiloCerveja" class="control-label">Estilo de Cerveja</label>
+                <input type="text" class="form-control" value="@Model.EstiloCerveja" disabled />
             </div>
             <div class="form-group">
                 <label asp-for="CervejariaIds" class="control-label">Cervejarias</label>
-                <select asp-for="CervejariaIds" class="form-control" asp-items="ViewBag.CervejariaIds" multiple></select>
+                <select asp-for="CervejariaIds" class="form-control" asp-items="ViewBag.CervejariaIds" multiple disabled></select>
                 <span asp-validation-for="CervejariaIds" class="text-danger"></span>
+                @foreach (var cervejariaId in Model.CervejariaIds)
+                {
+                    <input type="hidden" name="CervejariaIds" value="@cervejariaId" />
+                }
             </div>
             <div class="form-group">
                 <label asp-for="DataVisita" class="control-label">Data da Visita</label>
@@ -41,6 +49,14 @@
                 <label asp-for="Comentario" class="control-label">Comentário</label>
                 <input asp-for="Comentario" class="form-control" />
                 <span asp-validation-for="Comentario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModoViagem" class="control-label">Modo de Viagem</label>
+                <select asp-for="ModoViagem" class="form-control">
+                    <option value="DRIVING">Carro</option>
+                    <option value="WALKING">A pé</option>
+                </select>
+                <span asp-validation-for="ModoViagem" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
