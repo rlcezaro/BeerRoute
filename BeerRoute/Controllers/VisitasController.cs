@@ -67,7 +67,7 @@ namespace BeerRoute.Controllers
         // POST: Visitas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,EstiloCerveja,CervejariaIds")] ViewModelVisita visitaViewModel)
+        public async Task<IActionResult> Create([Bind("Id,UsuarioId,DataVisita,CreditosUtilizados,Avaliacao,Comentario,EstiloCerveja,CervejariaIds,ModoViagem")] ViewModelVisita visitaViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +78,8 @@ namespace BeerRoute.Controllers
                     CreditosUtilizados = visitaViewModel.CreditosUtilizados,
                     Avaliacao = visitaViewModel.Avaliacao,
                     Comentario = visitaViewModel.Comentario,
-                    VisitaCervejarias = visitaViewModel.CervejariaIds.Select(id => new VisitaCervejaria { CervejariaId = id }).ToList()
+                    VisitaCervejarias = visitaViewModel.CervejariaIds.Select(id => new VisitaCervejaria { CervejariaId = id }).ToList(),
+                    ModoViagem = visitaViewModel.ModoViagem // Adiciona o modo de viagem
                 };
 
                 _context.Add(visita);
@@ -90,6 +91,7 @@ namespace BeerRoute.Controllers
             ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
             return View(visitaViewModel);
         }
+
 
         public JsonResult GetCervejariasByEstiloCerveja(string estiloCerveja)
         {

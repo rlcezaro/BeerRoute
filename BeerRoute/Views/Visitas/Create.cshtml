@@ -47,6 +47,14 @@
                 <span asp-validation-for="Comentario" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="ModoViagem" class="control-label">Modo de Viagem</label>
+                <select asp-for="ModoViagem" class="form-control">
+                    <option value="DRIVING">Carro</option>
+                    <option value="WALKING">A pé</option>
+                </select>
+                <span asp-validation-for="ModoViagem" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Criar" class="btn btn-primary" />
                 <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
             </div>

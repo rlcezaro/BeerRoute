@@ -19,5 +19,6 @@ namespace BeerRoute.Models
         public int Avaliacao { get; set; }
         public string Comentario { get; set; }
         public ICollection<VisitaCervejaria> VisitaCervejarias { get; set; }
+        public string ModoViagem { get; set; } //Adicionado para selecionar o modo viagem
     }
 }

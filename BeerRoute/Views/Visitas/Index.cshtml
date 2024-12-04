@@ -78,10 +78,10 @@
         @foreach (var cervejaria in item.VisitaCervejarias)
         {
             <text>
-                        waypoints.push({
-                            location: new google.maps.LatLng(@cervejaria.Cervejaria.Latitude, @cervejaria.Cervejaria.Longitude),
-                            stopover: true
-                        });
+                                waypoints.push({
+                                    location: new google.maps.LatLng(@cervejaria.Cervejaria.Latitude, @cervejaria.Cervejaria.Longitude),
+                                    stopover: true
+                                });
             </text>
         }
     }
@@ -92,13 +92,14 @@
 
         var start = { lat: @userLat, lng: @userLng };
         var end = waypoints.pop().location;
+        var travelMode = '@Model.FirstOrDefault()?.ModoViagem' || 'DRIVING'; // Default to DRIVING if not set
 
         directionsService.route(
             {
                 origin: start,
                 destination: end,
                 waypoints: waypoints,
-                travelMode: google.maps.TravelMode.DRIVING
+                travelMode: google.maps.TravelMode[travelMode]
             },
             function(response, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
