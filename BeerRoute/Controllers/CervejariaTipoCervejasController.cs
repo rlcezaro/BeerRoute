@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BeerRoute.Data;
 using BeerRoute.Models;
 using BeerRoute.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeerRoute.Controllers
 {
@@ -22,18 +23,7 @@ namespace BeerRoute.Controllers
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> List()
-        {
-            var cervejariaTipoCervejas = await _context.CervejariaTipoCerveja
-                .Include(ctc => ctc.Cervejaria)
-                .Include(ctc => ctc.TipoCerveja)
-                .ToListAsync();
-
-            return View(cervejariaTipoCervejas);
-        }
-
-
-        // GET: CervejariaTipoCervejas
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             if (_context.CervejariaTipoCerveja == null)
@@ -50,7 +40,18 @@ namespace BeerRoute.Controllers
             return View(cervejariaTipoCervejas);
         }
 
-        // GET: CervejariaTipoCervejas/Details/5
+        [Authorize]
+        public async Task<IActionResult> List()
+        {
+            var cervejariaTipoCervejas = await _context.CervejariaTipoCerveja
+                .Include(ctc => ctc.Cervejaria)
+                .Include(ctc => ctc.TipoCerveja)
+                .ToListAsync();
+
+            return View(cervejariaTipoCervejas);
+        }
+
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.CervejariaTipoCerveja == null)
@@ -74,7 +75,7 @@ namespace BeerRoute.Controllers
             return View(cervejaria);
         }
 
-        // GET: CervejariaTipoCervejas/Create
+        [Authorize]
         public IActionResult Create()
         {
             var vm_cervejarias = new ViewModelCervejariaCervejas();
@@ -83,7 +84,7 @@ namespace BeerRoute.Controllers
             return View(vm_cervejarias);
         }
 
-        // POST: CervejariaTipoCervejas/Create
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CervejariaId,TipoCervejaId")] CervejariaTipoCerveja cervejariaTipoCerveja)
@@ -93,7 +94,7 @@ namespace BeerRoute.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: CervejariaTipoCervejas/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.CervejariaTipoCerveja == null)
@@ -109,7 +110,7 @@ namespace BeerRoute.Controllers
             return View(cervejariaTipoCerveja);
         }
 
-        // POST: CervejariaTipoCervejas/Edit/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CervejariaId,TipoCervejaId")] CervejariaTipoCerveja cervejariaTipoCerveja)
@@ -142,7 +143,7 @@ namespace BeerRoute.Controllers
             return View(cervejariaTipoCerveja);
         }
 
-        // GET: CervejariaTipoCervejas/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.CervejariaTipoCerveja == null)
@@ -162,7 +163,7 @@ namespace BeerRoute.Controllers
             return View(cervejariaTipoCerveja);
         }
 
-        // POST: CervejariaTipoCervejas/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -186,8 +187,7 @@ namespace BeerRoute.Controllers
             return (_context.CervejariaTipoCerveja?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        // GET: CervejariaTipoCervejas/Manage/5
-        // This method is used to manage the types of beer that a brewery produces.
+        [Authorize]
         public async Task<IActionResult> Manage(int? id)
         {
             if (id == null || _context.Cervejaria == null)
@@ -209,3 +209,4 @@ namespace BeerRoute.Controllers
         }
     }
 }
+

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeerRoute.Data;
 using BeerRoute.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeerRoute.Controllers
 {
+    [Authorize]
     public class EventosController : Controller
     {
         private readonly BeerRouteContext _context;

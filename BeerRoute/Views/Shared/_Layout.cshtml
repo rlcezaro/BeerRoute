@@ -11,7 +11,6 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <!--vamos colocar um logotipo do lado esquerdo da navbar-->
                 <a class="navbar-brand" href="/Home">
                     <img src="~/images/logo.svg" alt="BeerRoute" width="150" height="50" class="d-inline-block align-top" />
                 </a>
@@ -45,6 +44,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/Visitas">Visitas</a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        @await Html.PartialAsync("_LoginPartial")
                     </ul>
                 </div>
             </div>

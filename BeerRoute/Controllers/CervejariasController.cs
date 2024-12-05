@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using BeerRoute.Data;
 using BeerRoute.Models;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeerRoute.Controllers
 {
+    [Authorize]
     public class CervejariasController : Controller
     {
         private readonly BeerRouteContext _context;

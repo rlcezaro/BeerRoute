@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using BeerRoute.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BeerRoute.Data
 {
-    public class BeerRouteContext : DbContext
+    public class BeerRouteContext : IdentityDbContext<IdentityUser>
     {
         public BeerRouteContext(DbContextOptions<BeerRouteContext> options)
             : base(options)
@@ -21,11 +23,11 @@ namespace BeerRoute.Data
         public DbSet<Visita>? Visita { get; set; }
         public DbSet<Evento>? Evento { get; set; }
         public DbSet<CompraCredito>? CompraCredito { get; set; }
-        public DbSet<VisitaCervejaria> VisitaCervejaria { get; set; } 
+        public DbSet<VisitaCervejaria> VisitaCervejaria { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);            
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
