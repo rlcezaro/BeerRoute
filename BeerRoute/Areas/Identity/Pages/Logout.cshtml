@@ -1,18 +1,18 @@
 ﻿@page
 @model LogoutModel
 @{
-    ViewData["Title"] = "Logout";
+    ViewData["Title"] = "Sair";
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<h4>Are you sure you want to log out?</h4>
+<h4>Você tem certeza que deseja sair?</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            <button type="submit" class="btn btn-primary">Logout</button>
-            <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Sair</button>
+            <a asp-page="./Index" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 </div>

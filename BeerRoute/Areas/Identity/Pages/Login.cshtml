@@ -1,7 +1,7 @@
 ﻿@page
 @model LoginModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Entrar";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -10,7 +10,7 @@
     <div class="col-md-4">
         <section>
             <form method="post">
-                <h4>Use a local account to log in.</h4>
+                <h4>Use uma conta local para entrar.</h4>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
@@ -30,14 +30,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Log in</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
                 </div>
                 <div class="form-group">
                     <p>
-                        <a asp-page="./ForgotPassword">Forgot your password?</a>
+                        <a asp-page="./ForgotPassword">Esqueceu sua senha?</a>
                     </p>
                     <p>
-                        <a asp-page="./Register">Register as a new user</a>
+                        <a asp-page="./Register">Registrar um novo usuário</a>
                     </p>
                 </div>
             </form>
