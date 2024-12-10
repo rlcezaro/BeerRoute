@@ -7,8 +7,28 @@ var builder = WebApplication.CreateBuilder(args);
 // Adicionar suporte para appsettings.Local.json
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
+// Adicionar suporte para variáveis de ambiente
+builder.Configuration.AddEnvironmentVariables();
+
+string connectionString;
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = builder.Configuration.GetConnectionString("BeerRouteContext");
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("ConnectionStringsAzure:BeerRouteContext");
+}
+
 builder.Services.AddDbContext<BeerRouteContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BeerRouteContext") ?? throw new InvalidOperationException("Connection string 'BeerRouteContext' not found.")));
+    options.UseSqlServer(connectionString ?? throw new InvalidOperationException("Connection string 'BeerRouteContext' not found."),
+    sqlServerOptionsAction: sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null);
+    }));
 
 // Adicionar o Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
