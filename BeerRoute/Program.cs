@@ -17,7 +17,8 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    connectionString = builder.Configuration.GetConnectionString("ConnectionStringsAzure:BeerRouteContext");
+    connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")
+                       ?? builder.Configuration.GetConnectionString("ConnectionStringsAzure:BeerRouteContext");
 }
 
 builder.Services.AddDbContext<BeerRouteContext>(options =>
