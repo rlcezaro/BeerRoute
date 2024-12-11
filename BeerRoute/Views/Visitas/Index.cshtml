@@ -5,6 +5,7 @@
     var apiKey = ViewBag.ApiKey;
     var userLat = -30.03488;
     var userLng = -51.22647;
+    var beerIconUrl = Url.Content("~/images/lupuloicon.svg"); // Caminho para o ícone lúpulo em formato SVG
 }
 
 <h1>Marcando uma Visita</h1>
@@ -59,6 +60,7 @@
     var map;
     var directionsService;
     var directionsRenderer;
+    var beerIconUrl = '@beerIconUrl';
 
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -66,22 +68,60 @@
             zoom: 15
         });
         directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            suppressMarkers: true // Suprime os marcadores padrão
+        });
         directionsRenderer.setMap(map);
         calculateAndDisplayRoute();
     }
 
     function calculateAndDisplayRoute() {
         var waypoints = [];
+        var markers = [];
+        var infoWindows = [];
+        var order = 1;
+
     @foreach (var item in Model)
     {
         @foreach (var cervejaria in item.VisitaCervejarias)
         {
             <text>
-                                waypoints.push({
-                                    location: new google.maps.LatLng(@cervejaria.Cervejaria.Latitude, @cervejaria.Cervejaria.Longitude),
-                                    stopover: true
-                                });
+                            waypoints.push({
+                                location: new google.maps.LatLng(@cervejaria.Cervejaria.Latitude, @cervejaria.Cervejaria.Longitude),
+                                stopover: true
+                            });
+
+                            var marker = new google.maps.Marker({
+                                position: { lat: @cervejaria.Cervejaria.Latitude, lng: @cervejaria.Cervejaria.Longitude },
+                                map: map,
+                                title: '@cervejaria.Cervejaria.Nome' + ' - ' + '@cervejaria.Cervejaria.Endereco',
+                                icon: {
+                                    url: beerIconUrl,
+                                    scaledSize: new google.maps.Size(48, 48), // Ajuste o tamanho do ícone aqui
+                                    labelOrigin: new google.maps.Point(24, -10) // Ajuste a posição do rótulo aqui
+                                },
+                                label: {
+                                    text: order.toString(),
+                                    color: 'red',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold'
+                                }
+                            });
+
+                            var infoWindow = new google.maps.InfoWindow({
+                                content: '<div><strong>@cervejaria.Cervejaria.Nome</strong></div>'
+                            });
+
+                            google.maps.event.addListener(marker, 'click', (function(marker, infoWindow) {
+                                return function() {
+                                    infoWindows.forEach(function(iw) { iw.close(); });
+                                    infoWindow.open(map, marker);
+                                };
+                            })(marker, infoWindow));
+
+                            markers.push(marker);
+                            infoWindows.push(infoWindow);
+                            order++;
             </text>
         }
     }
@@ -93,6 +133,24 @@
         var start = { lat: @userLat, lng: @userLng };
         var end = waypoints.pop().location;
         var travelMode = '@Model.FirstOrDefault()?.ModoViagem' || 'DRIVING'; // Default to DRIVING if not set
+
+        // Adiciona o marcador para o ponto de partida
+        var startMarker = new google.maps.Marker({
+            position: start,
+            map: map,
+            title: 'Ponto de Partida'
+        });
+
+        var startInfoWindow = new google.maps.InfoWindow({
+            content: '<div><strong>@Model.FirstOrDefault()?.Usuario.Nome</strong></div>'
+        });
+
+        startMarker.addListener('click', function() {
+            infoWindows.forEach(function(iw) { iw.close(); });
+            startInfoWindow.open(map, startMarker);
+        });
+
+        infoWindows.push(startInfoWindow);
 
         directionsService.route(
             {
