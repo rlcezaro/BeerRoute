@@ -71,6 +71,21 @@ namespace BeerRoute.Controllers
         {
             if (ModelState.IsValid)
             {
+                var usuario = await _context.Usuario.FindAsync(visitaViewModel.UsuarioId);
+                if (usuario == null)
+                {
+                    return NotFound();
+                }
+
+                if (usuario.Creditos < visitaViewModel.CreditosUtilizados)
+                {
+                    ModelState.AddModelError(string.Empty, "Créditos insuficientes. Por favor, adicione mais créditos para concluir a visita.");
+                    ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
+                    ViewData["EstiloCerveja"] = new SelectList(_context.TipoCerveja.Select(tc => tc.Estilo).Distinct(), visitaViewModel.EstiloCerveja);
+                    ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
+                    return View(visitaViewModel);
+                }
+
                 var visita = new Visita
                 {
                     UsuarioId = visitaViewModel.UsuarioId,
@@ -79,11 +94,17 @@ namespace BeerRoute.Controllers
                     Avaliacao = visitaViewModel.Avaliacao,
                     Comentario = visitaViewModel.Comentario,
                     VisitaCervejarias = visitaViewModel.CervejariaIds.Select(id => new VisitaCervejaria { CervejariaId = id }).ToList(),
-                    ModoViagem = visitaViewModel.ModoViagem // Adiciona o modo de viagem
+                    ModoViagem = visitaViewModel.ModoViagem
                 };
 
                 _context.Add(visita);
                 await _context.SaveChangesAsync();
+
+                // Descontar os créditos do usuário
+                usuario.Creditos -= visita.CreditosUtilizados;
+                _context.Update(usuario);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
@@ -153,40 +174,48 @@ namespace BeerRoute.Controllers
                 return NotFound();
             }
 
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
-                    var visita = await _context.Visita
-                        .Include(v => v.VisitaCervejarias)
-                        .FirstOrDefaultAsync(v => v.Id == id);
-                    visita.UsuarioId = visitaViewModel.UsuarioId;
-                    visita.DataVisita = visitaViewModel.DataVisita;
-                    visita.CreditosUtilizados = visitaViewModel.CreditosUtilizados;
-                    visita.Avaliacao = visitaViewModel.Avaliacao;
-                    visita.Comentario = visitaViewModel.Comentario;
-                    visita.VisitaCervejarias = visitaViewModel.CervejariaIds.Select(cid => new VisitaCervejaria { CervejariaId = cid }).ToList();
-                    visita.ModoViagem = visitaViewModel.ModoViagem;
-                    _context.Update(visita);
-                    await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateConcurrencyException)
-            //    {
-            //        if (!VisitaExists(visitaViewModel.Id))
-            //        {
-            //            return NotFound();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-                return RedirectToAction(nameof(Index));
-            //}
-            //ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome", visitaViewModel.UsuarioId);
-            //ViewData["EstiloCerveja"] = new SelectList(_context.TipoCerveja.Select(tc => tc.Estilo).Distinct(), visitaViewModel.EstiloCerveja);
-            //ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
-            //return View(visitaViewModel);
+            var visita = await _context.Visita
+                .Include(v => v.VisitaCervejarias)
+                .FirstOrDefaultAsync(v => v.Id == id);
+
+            if (visita == null)
+            {
+                return NotFound();
+            }
+
+            var usuario = await _context.Usuario.FindAsync(visita.UsuarioId);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            // Verificar se o usuário tem créditos suficientes
+            var creditosNecessarios = visitaViewModel.CreditosUtilizados - visita.CreditosUtilizados;
+            if (usuario.Creditos < creditosNecessarios)
+            {
+                ModelState.AddModelError(string.Empty, "Créditos insuficientes. Por favor, adicione mais créditos para concluir a visita.");
+                ViewData["UsuarioNome"] = _context.Usuario.FirstOrDefault(u => u.Id == visita.UsuarioId)?.Nome;
+                ViewData["CervejariaIds"] = new SelectList(_context.CervejariaTipoCerveja.Where(ctc => ctc.TipoCerveja.Estilo == visitaViewModel.EstiloCerveja).Select(ctc => ctc.Cervejaria), "Id", "Nome", visitaViewModel.CervejariaIds);
+                return View(visitaViewModel);
+            }
+
+            // Ajustar os créditos do usuário
+            usuario.Creditos += visita.CreditosUtilizados; // Reverter os créditos antigos
+            usuario.Creditos -= visitaViewModel.CreditosUtilizados; // Aplicar os novos créditos
+
+            visita.UsuarioId = visitaViewModel.UsuarioId;
+            visita.DataVisita = visitaViewModel.DataVisita;
+            visita.CreditosUtilizados = visitaViewModel.CreditosUtilizados;
+            visita.Avaliacao = visitaViewModel.Avaliacao;
+            visita.Comentario = visitaViewModel.Comentario;
+            visita.VisitaCervejarias = visitaViewModel.CervejariaIds.Select(cid => new VisitaCervejaria { CervejariaId = cid }).ToList();
+            visita.ModoViagem = visitaViewModel.ModoViagem;
+
+            _context.Update(visita);
+            _context.Update(usuario);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Visitas/Delete/5
@@ -222,18 +251,22 @@ namespace BeerRoute.Controllers
             var visita = await _context.Visita
                 .Include(v => v.VisitaCervejarias)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (visita != null)
             {
+                // Reverter os créditos do usuário
+                var usuario = await _context.Usuario.FindAsync(visita.UsuarioId);
+                if (usuario != null)
+                {
+                    usuario.Creditos += visita.CreditosUtilizados;
+                    _context.Update(usuario);
+                }
+
                 _context.Visita.Remove(visita);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool VisitaExists(int id)
-        {
-            return (_context.Visita?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
