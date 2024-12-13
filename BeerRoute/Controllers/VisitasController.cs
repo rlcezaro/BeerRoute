@@ -59,7 +59,9 @@ namespace BeerRoute.Controllers
         public IActionResult Create()
         {
             ViewData["UsuarioId"] = new SelectList(_context.Usuario, "Id", "Nome");
-            ViewData["EstiloCerveja"] = new SelectList(_context.TipoCerveja.Select(tc => tc.Estilo).Distinct());
+            var estilosCerveja = _context.TipoCerveja.Select(tc => tc.Estilo).Distinct().ToList();
+            estilosCerveja.Insert(0, "Selecione um estilo de Cerveja");
+            ViewData["EstiloCerveja"] = new SelectList(estilosCerveja);
             ViewData["CervejariaIds"] = new SelectList(Enumerable.Empty<SelectListItem>(), "Id", "Nome");
             return View();
         }

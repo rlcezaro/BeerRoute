@@ -2,11 +2,11 @@
 
 @{
     ViewData["Title"] = "Editar Cervejaria";
+    var apiKey = ViewBag.ApiKey;
 }
 
 <h1>Editar Cervejaria</h1>
 
-<h4>Cervejaria</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -25,12 +25,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Latitude" class="control-label"></label>
-                <input asp-for="Latitude" class="form-control" />
+                <input asp-for="Latitude" class="form-control" readonly />
                 <span asp-validation-for="Latitude" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Longitude" class="control-label"></label>
-                <input asp-for="Longitude" class="form-control" />
+                <input asp-for="Longitude" class="form-control" readonly />
                 <span asp-validation-for="Longitude" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -78,14 +78,46 @@
             </div>
         </form>
     </div>
+    <div class="col-md-8">
+        <div id="map" style="height: 500px; width: 100%;"></div>
+    </div>
 </div>
 
 <div>
     <a class="btn btn-secondary" asp-action="Index">Voltar para a Lista</a>
 </div>
 
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
+    <script>
+        var map;
+        var marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: { lat: -30.0333, lng: -51.2280 } // Centro das Cervejarias
+            });
+
+            map.addListener('click', function (event) {
+                placeMarker(event.latLng);
+            });
+        }
+
+        function placeMarker(location) {
+            if (marker) {
+                marker.setPosition(location);
+            } else {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map
+                });
+            }
+            var latitude = location.lat().toFixed(5);
+            var longitude = location.lng().toFixed(5);
+            document.getElementById('Latitude').value = latitude;
+            document.getElementById('Longitude').value = longitude;
+        }
+    </script>
 }

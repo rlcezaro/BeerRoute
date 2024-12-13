@@ -109,6 +109,8 @@ namespace BeerRoute.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.ApiKey = _configuration["ApiSettings:ApiKey"];
             return View(cervejaria);
         }
 
